@@ -12,15 +12,15 @@ type PaymentMessageListener interface {
 }
 
 type PaymentMessageListenerImpl struct {
-	saga saga.OrderPaymentSaga
+	orderPaymentSaga saga.OrderPaymentSaga
 }
 
-func NewPaymentMessageListenerImpl(saga saga.OrderPaymentSaga) *PaymentMessageListenerImpl {
-	return &PaymentMessageListenerImpl{saga: saga}
+func NewPaymentMessageListenerImpl(orderPaymentSaga saga.OrderPaymentSaga) *PaymentMessageListenerImpl {
+	return &PaymentMessageListenerImpl{orderPaymentSaga: orderPaymentSaga}
 }
 
 func (p *PaymentMessageListenerImpl) PaymentCompleted(response *dto.PaymentResponse) error {
-	err := p.saga.Process(response)
+	err := p.orderPaymentSaga.Process(response)
 	if err != nil {
 		return err
 	}
@@ -29,5 +29,10 @@ func (p *PaymentMessageListenerImpl) PaymentCompleted(response *dto.PaymentRespo
 }
 
 func (p *PaymentMessageListenerImpl) PaymentCancelled(response *dto.PaymentResponse) error {
+	err := p.orderPaymentSaga.Rollback(response)
+	if err != nil {
+		return err
+	}
+	log.Printf("order is roll backed for order id: %s with failure messages: %s\n", response.OrderID, response.FailureMessages)
 	return nil
 }

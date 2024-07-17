@@ -12,10 +12,10 @@ type PaymentMessageListener interface {
 }
 
 type PaymentMessageListenerImpl struct {
-	orderPaymentSaga saga.OrderPaymentSaga
+	orderPaymentSaga *saga.OrderPaymentSaga
 }
 
-func NewPaymentMessageListenerImpl(orderPaymentSaga saga.OrderPaymentSaga) *PaymentMessageListenerImpl {
+func NewPaymentMessageListenerImpl(orderPaymentSaga *saga.OrderPaymentSaga) *PaymentMessageListenerImpl {
 	return &PaymentMessageListenerImpl{orderPaymentSaga: orderPaymentSaga}
 }
 

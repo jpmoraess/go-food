@@ -3,10 +3,10 @@ package saga
 type SagaStatus string
 
 const (
-	STARTED      SagaStatus = "Started"
-	FAILED       SagaStatus = "Failed"
-	SUCCEEDED    SagaStatus = "Succeeded"
-	PROCESSING   SagaStatus = "Processing"
-	COMPENSATING SagaStatus = "Compensating"
-	COMPENSATED  SagaStatus = "Compensated"
+	STARTED      SagaStatus = "STARTED"
+	FAILED       SagaStatus = "FAILED"
+	SUCCEEDED    SagaStatus = "SUCCEEDED"
+	PROCESSING   SagaStatus = "PROCESSING"
+	COMPENSATING SagaStatus = "COMPENSATING"
+	COMPENSATED  SagaStatus = "COMPENSATED"
 )

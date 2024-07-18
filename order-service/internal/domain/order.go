@@ -34,7 +34,7 @@ func NewOrder(customerID uuid.UUID, restaurantID uuid.UUID) *Order {
 		CustomerID:   customerID,
 		RestaurantID: restaurantID,
 		TrackingID:   trackingID,
-		OrderStatus:  Pending,
+		OrderStatus:  PENDING,
 	}
 }
 
@@ -47,35 +47,35 @@ func (o *Order) Validate() error {
 }
 
 func (o *Order) Pay() error {
-	if o.OrderStatus != Pending {
+	if o.OrderStatus != PENDING {
 		return errors.New("order is not in correct state for pay operation")
 	}
-	o.OrderStatus = Paid
+	o.OrderStatus = PAID
 	return nil
 }
 
 func (o *Order) Approve() error {
-	if o.OrderStatus != Paid {
+	if o.OrderStatus != PAID {
 		return errors.New("order is not in correct state for approve operation")
 	}
-	o.OrderStatus = Approved
+	o.OrderStatus = APPROVED
 	return nil
 }
 
 func (o *Order) InitCancel(failureMessages []string) error {
-	if o.OrderStatus != Paid {
+	if o.OrderStatus != PAID {
 		return errors.New("order is not in correct state for init cancel operation")
 	}
-	o.OrderStatus = Cancelling
+	o.OrderStatus = CANCELLING
 	o.updateFailureMessages(failureMessages)
 	return nil
 }
 
 func (o *Order) Cancel(failureMessages []string) error {
-	if !(o.OrderStatus == Cancelling || o.OrderStatus == Pending) {
+	if !(o.OrderStatus == CANCELLING || o.OrderStatus == PENDING) {
 		return errors.New("order is not in correct state for cancel operation")
 	}
-	o.OrderStatus = Cancelled
+	o.OrderStatus = CANCELLED
 	o.updateFailureMessages(failureMessages)
 	return nil
 }

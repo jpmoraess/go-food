@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
@@ -16,16 +17,16 @@ func NewSagaHelper(orderRepo domain.OrderRepository) *SagaHelper {
 	return &SagaHelper{orderRepo: orderRepo}
 }
 
-func (s *SagaHelper) FindOrder(orderID uuid.UUID) (*domain.Order, error) {
-	order, err := s.orderRepo.FindByID(orderID)
+func (s *SagaHelper) FindOrder(ctx context.Context, orderID uuid.UUID) (*domain.Order, error) {
+	order, err := s.orderRepo.FindByID(ctx, orderID)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("order with id: %s could not be found\n", orderID))
 	}
 	return order, nil
 }
 
-func (s *SagaHelper) SaveOrder(order *domain.Order) (*domain.Order, error) {
-	saved, err := s.orderRepo.Save(order)
+func (s *SagaHelper) SaveOrder(ctx context.Context, order *domain.Order) (*domain.Order, error) {
+	saved, err := s.orderRepo.Save(ctx, order)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("order with id: %s could not be saved\n", order.ID))
 	}

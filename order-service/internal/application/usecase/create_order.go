@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"github.com/google/uuid"
 	"github.com/jpmoraess/go-food/order-service/internal/application/dto"
 	"github.com/jpmoraess/go-food/order-service/internal/application/helper"
@@ -8,23 +9,24 @@ import (
 )
 
 type CreateOrderUseCase struct {
-	orderSagaHelper     helper.SagaHelper
-	createOrderHelper   helper.CreateOrderHelper
-	paymentOutboxHelper outbox.PaymentOutboxHelper
+	orderSagaHelper     *helper.SagaHelper
+	createOrderHelper   *helper.CreateOrderHelper
+	paymentOutboxHelper *outbox.PaymentOutboxHelper
 }
 
-func NewCreateOrderUseCase(orderSagaHelper helper.SagaHelper, createOrderHelper helper.CreateOrderHelper, paymentOutboxHelper outbox.PaymentOutboxHelper) *CreateOrderUseCase {
+func NewCreateOrderUseCase(orderSagaHelper *helper.SagaHelper, createOrderHelper *helper.CreateOrderHelper, paymentOutboxHelper *outbox.PaymentOutboxHelper) *CreateOrderUseCase {
 	return &CreateOrderUseCase{orderSagaHelper: orderSagaHelper, createOrderHelper: createOrderHelper, paymentOutboxHelper: paymentOutboxHelper}
 }
 
-func (uc *CreateOrderUseCase) Execute(input *dto.CreateOrderInputDTO) (*dto.CreateOrderOutputDTO, error) {
-	event, err := uc.createOrderHelper.PersistOrder(input)
+func (uc *CreateOrderUseCase) Execute(ctx context.Context, input *dto.CreateOrderInputDTO) (*dto.CreateOrderOutputDTO, error) {
+	event, err := uc.createOrderHelper.PersistOrder(ctx, input)
 	if err != nil {
 		return nil, err
 	}
 
 	sagaId, _ := uuid.NewRandom()
 	err = uc.paymentOutboxHelper.SavePaymentOutbox(
+		ctx,
 		nil,
 		event.Order.OrderStatus,
 		uc.orderSagaHelper.OrderStatusToSagaStatus(event.Order.OrderStatus),

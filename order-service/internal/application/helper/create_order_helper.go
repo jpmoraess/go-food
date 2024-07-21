@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"context"
 	"github.com/jpmoraess/go-food/order-service/internal/application/dto"
 	"github.com/jpmoraess/go-food/order-service/internal/application/mapper"
 	"github.com/jpmoraess/go-food/order-service/internal/domain"
@@ -15,7 +16,7 @@ func NewCreateOrderHelper(orderRepo domain.OrderRepository, orderService domain.
 	return &CreateOrderHelper{orderRepo: orderRepo, orderService: orderService}
 }
 
-func (h *CreateOrderHelper) PersistOrder(input *dto.CreateOrderInputDTO) (*domain.OrderCreatedEvent, error) {
+func (h *CreateOrderHelper) PersistOrder(ctx context.Context, input *dto.CreateOrderInputDTO) (*domain.OrderCreatedEvent, error) {
 	orderMapper := mapper.OrderMapper{}
 	order := orderMapper.MapOrderInputToDomain(input)
 
@@ -24,7 +25,7 @@ func (h *CreateOrderHelper) PersistOrder(input *dto.CreateOrderInputDTO) (*domai
 		return nil, err
 	}
 
-	order, err = h.orderRepo.Save(orderCreatedEvent.GetOrder())
+	order, err = h.orderRepo.Save(ctx, orderCreatedEvent.GetOrder())
 	if err != nil {
 		return nil, err
 	}

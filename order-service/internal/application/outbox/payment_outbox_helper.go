@@ -1,6 +1,7 @@
 package outbox
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/google/uuid"
 	"github.com/jpmoraess/go-food/order-service/internal/application/saga"
@@ -16,15 +17,15 @@ func NewPaymentOutboxHelper(paymentOutboxRepo PaymentOutboxRepository) *PaymentO
 	return &PaymentOutboxHelper{paymentOutboxRepo: paymentOutboxRepo}
 }
 
-func (h *PaymentOutboxHelper) GetPaymentOutboxByOutboxStatusAndSagaStatus(outboxStatus OutboxStatus, sagaStatus ...saga.SagaStatus) []*PaymentOutbox {
-	return h.paymentOutboxRepo.FindByTypeAndOutboxStatusAndSagaStatus("OrderSaga", outboxStatus, sagaStatus...)
+func (h *PaymentOutboxHelper) GetPaymentOutboxByOutboxStatusAndSagaStatus(ctx context.Context, outboxStatus OutboxStatus, sagaStatus ...saga.SagaStatus) []*PaymentOutbox {
+	return h.paymentOutboxRepo.FindByTypeAndOutboxStatusAndSagaStatus(ctx, "OrderSaga", outboxStatus, sagaStatus...)
 }
 
-func (h *PaymentOutboxHelper) GetPaymentOutboxMessageBySagaIdAndSagaStatus(sagaId uuid.UUID, sagaStatus ...saga.SagaStatus) *PaymentOutbox {
-	return h.paymentOutboxRepo.FindByTypeAndSagaIdAndSagaStatus("OrderSaga", sagaId, sagaStatus...)
+func (h *PaymentOutboxHelper) GetPaymentOutboxMessageBySagaIdAndSagaStatus(ctx context.Context, sagaId uuid.UUID, sagaStatus ...saga.SagaStatus) *PaymentOutbox {
+	return h.paymentOutboxRepo.FindByTypeAndSagaIdAndSagaStatus(ctx, "OrderSaga", sagaId, sagaStatus...)
 }
 
-func (h *PaymentOutboxHelper) SavePaymentOutbox(payload *PaymentEventPayload, orderStatus domain.OrderStatus, sagaStatus saga.SagaStatus, outboxStatus OutboxStatus, sagaId uuid.UUID) error {
+func (h *PaymentOutboxHelper) SavePaymentOutbox(ctx context.Context, payload *PaymentEventPayload, orderStatus domain.OrderStatus, sagaStatus saga.SagaStatus, outboxStatus OutboxStatus, sagaId uuid.UUID) error {
 	id, _ := uuid.NewRandom()
 	payloadStr, err := convertPayload(payload)
 	if err != nil {
@@ -41,15 +42,15 @@ func (h *PaymentOutboxHelper) SavePaymentOutbox(payload *PaymentEventPayload, or
 		OutboxStatus: outboxStatus,
 	}
 
-	if err = h.save(paymentOutbox); err != nil {
+	if err = h.save(ctx, paymentOutbox); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (h *PaymentOutboxHelper) save(paymentOutbox *PaymentOutbox) error {
-	return h.paymentOutboxRepo.Save(paymentOutbox)
+func (h *PaymentOutboxHelper) save(ctx context.Context, paymentOutbox *PaymentOutbox) error {
+	return h.paymentOutboxRepo.Save(ctx, paymentOutbox)
 }
 
 func convertPayload(payload *PaymentEventPayload) (string, error) {

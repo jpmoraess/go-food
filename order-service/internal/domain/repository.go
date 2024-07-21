@@ -1,9 +1,12 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"context"
+	"github.com/google/uuid"
+)
 
 type OrderRepository interface {
-	Save(order *Order) (*Order, error)
-	FindByID(orderID uuid.UUID) (*Order, error)
-	FindByTrackingID(trackingID uuid.UUID) (*Order, error)
+	Save(ctx context.Context, order *Order) (*Order, error)
+	FindByID(ctx context.Context, orderID uuid.UUID) (*Order, error)
+	FindByTrackingID(ctx context.Context, trackingID uuid.UUID) (*Order, error)
 }

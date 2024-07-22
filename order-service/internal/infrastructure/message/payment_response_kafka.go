@@ -3,7 +3,6 @@ package message
 import (
 	"context"
 	"github.com/IBM/sarama"
-	"github.com/jpmoraess/go-food/order-service/internal/application/dto"
 	"github.com/jpmoraess/go-food/order-service/internal/application/gateway"
 	"log"
 	"time"
@@ -38,16 +37,17 @@ func (paymentConsumerGroupHandler) Setup(_ sarama.ConsumerGroupSession) error   
 func (paymentConsumerGroupHandler) Cleanup(_ sarama.ConsumerGroupSession) error { return nil }
 func (h paymentConsumerGroupHandler) ConsumeClaim(sess sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for msg := range claim.Messages() {
-		log.Printf("Received message: %s\n", string(msg.Value))
-		err := h.listener.PaymentCompleted(&dto.PaymentResponse{})
-		_ = err
+		log.Printf("Received message: topic=%s partition=%d offset=%d key=%s value=%s\n",
+			msg.Topic, msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
+		sess.MarkMessage(msg, "ok")
 	}
+
 	return nil
 }
 
 func (p *PaymentResponseKafka) StartConsume() {
 	for {
-		err := p.consumerGroup.Consume(context.Background(), []string{"payments"}, paymentConsumerGroupHandler{})
+		err := p.consumerGroup.Consume(context.Background(), []string{"debezium.order.payment_outbox"}, paymentConsumerGroupHandler{})
 		if err != nil {
 			log.Panicf("error from consumer: %v", err)
 		}

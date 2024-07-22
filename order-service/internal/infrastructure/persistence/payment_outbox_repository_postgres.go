@@ -47,7 +47,7 @@ func (p *PaymentOutboxRepositoryPostgres) Save(ctx context.Context, paymentOutbo
 	}
 
 	query := `
-		INSERT INTO payment_outbox_entity (id, saga_id, created_at, processed_at, type, payload, saga_status, order_status, outbox_status, version)
+		INSERT INTO payment_outbox (id, saga_id, created_at, processed_at, type, payload, saga_status, order_status, outbox_status, version)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 

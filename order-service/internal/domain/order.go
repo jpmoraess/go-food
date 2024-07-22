@@ -6,98 +6,131 @@ import (
 )
 
 var (
-	ErrPriceGreaterThanZero = errors.New("price must greater than zero")
+	ErrPriceGreaterThanZero                 = errors.New("price must greater than zero")
+	ErrIncorrectStateForPayOperation        = errors.New("order is not in correct state for pay operation")
+	ErrIncorrectStateForCancelOperation     = errors.New("order is not in correct state for cancel operation")
+	ErrIncorrectStateForApproveOperation    = errors.New("order is not in correct state for approve operation")
+	ErrIncorrectStateForInitCancelOperation = errors.New("order is not in correct state for init cancel operation")
 )
 
 type Order struct {
-	ID              uuid.UUID
-	CustomerID      uuid.UUID
-	RestaurantID    uuid.UUID
-	Price           float64
-	Items           []*OrderItem
-	OrderStatus     OrderStatus
-	TrackingID      uuid.UUID
-	FailureMessages []string
+	id              uuid.UUID
+	customerID      uuid.UUID
+	restaurantID    uuid.UUID
+	price           float64
+	items           []*OrderItem
+	orderStatus     OrderStatus
+	trackingID      uuid.UUID
+	failureMessages []string
 }
 
-func NewOrder(customerID uuid.UUID, restaurantID uuid.UUID) *Order {
-	orderID, err := uuid.NewV7()
-	if err != nil {
+func newOrder(customerID uuid.UUID, restaurantID uuid.UUID, price float64, items []*OrderItem) (*Order, error) {
+	orderID, _ := uuid.NewV7()
+	trackingID, _ := uuid.NewV7()
 
+	if !(price > 0) {
+		return nil, ErrPriceGreaterThanZero
 	}
-	trackingID, err := uuid.NewV7()
-	if err != nil {
 
-	}
 	return &Order{
-		ID:           orderID,
-		CustomerID:   customerID,
-		RestaurantID: restaurantID,
-		TrackingID:   trackingID,
-		OrderStatus:  PENDING,
-	}
+		id:              orderID,
+		customerID:      customerID,
+		restaurantID:    restaurantID,
+		price:           price,
+		items:           items,
+		orderStatus:     PENDING,
+		trackingID:      trackingID,
+		failureMessages: make([]string, 0),
+	}, nil
 }
 
-func (o *Order) Validate() error {
-	err := o.validateTotalPrice()
-	if err != nil {
-		return err
+func (o *Order) pay() error {
+	if o.orderStatus != PENDING {
+		return ErrIncorrectStateForPayOperation
 	}
+	o.orderStatus = PAID
 	return nil
 }
 
-func (o *Order) Pay() error {
-	if o.OrderStatus != PENDING {
-		return errors.New("order is not in correct state for pay operation")
+func (o *Order) approve() error {
+	if o.orderStatus != PAID {
+		return ErrIncorrectStateForApproveOperation
 	}
-	o.OrderStatus = PAID
+	o.orderStatus = APPROVED
 	return nil
 }
 
-func (o *Order) Approve() error {
-	if o.OrderStatus != PAID {
-		return errors.New("order is not in correct state for approve operation")
+func (o *Order) initCancel(failureMessages []string) error {
+	if o.orderStatus != PAID {
+		return ErrIncorrectStateForInitCancelOperation
 	}
-	o.OrderStatus = APPROVED
-	return nil
-}
-
-func (o *Order) InitCancel(failureMessages []string) error {
-	if o.OrderStatus != PAID {
-		return errors.New("order is not in correct state for init cancel operation")
-	}
-	o.OrderStatus = CANCELLING
+	o.orderStatus = CANCELLING
 	o.updateFailureMessages(failureMessages)
 	return nil
 }
 
-func (o *Order) Cancel(failureMessages []string) error {
-	if !(o.OrderStatus == CANCELLING || o.OrderStatus == PENDING) {
-		return errors.New("order is not in correct state for cancel operation")
+func (o *Order) cancel(failureMessages []string) error {
+	if !(o.orderStatus == CANCELLING || o.orderStatus == PENDING) {
+		return ErrIncorrectStateForCancelOperation
 	}
-	o.OrderStatus = CANCELLED
+	o.orderStatus = CANCELLED
 	o.updateFailureMessages(failureMessages)
 	return nil
-}
-
-func (o *Order) validateTotalPrice() error {
-	if !(o.Price > 0) {
-		return errors.New("total price must be greater than zero")
-	}
-	return nil
-}
-
-func (o *Order) initializeOrderItems() {
-	for i := 0; i < len(o.Items); i++ {
-
-	}
 }
 
 func (o *Order) updateFailureMessages(failureMessages []string) {
-	if o.FailureMessages != nil && failureMessages != nil {
-		o.FailureMessages = append(o.FailureMessages, failureMessages...)
+	if o.failureMessages != nil && failureMessages != nil {
+		o.failureMessages = append(o.failureMessages, failureMessages...)
 	}
-	if o.FailureMessages == nil {
-		o.FailureMessages = failureMessages
+	if o.failureMessages == nil {
+		o.failureMessages = failureMessages
 	}
+}
+
+func (o *Order) ID() uuid.UUID {
+	return o.id
+}
+
+func (o *Order) CustomerID() uuid.UUID {
+	return o.customerID
+}
+
+func (o *Order) SetCustomerID(customerID uuid.UUID) {
+	o.customerID = customerID
+}
+
+func (o *Order) RestaurantID() uuid.UUID {
+	return o.restaurantID
+}
+
+func (o *Order) SetRestaurantID(restaurantID uuid.UUID) {
+	o.restaurantID = restaurantID
+}
+
+func (o *Order) Price() float64 {
+	return o.price
+}
+
+func (o *Order) SetPrice(price float64) {
+	o.price = price
+}
+
+func (o *Order) Items() []*OrderItem {
+	return o.items
+}
+
+func (o *Order) SetItems(items []*OrderItem) {
+	o.items = items
+}
+
+func (o *Order) Status() OrderStatus {
+	return o.orderStatus
+}
+
+func (o *Order) TrackingID() uuid.UUID {
+	return o.trackingID
+}
+
+func (o *Order) FailureMessages() []string {
+	return o.failureMessages
 }

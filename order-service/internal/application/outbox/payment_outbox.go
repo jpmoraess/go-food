@@ -22,11 +22,11 @@ type PaymentOutbox struct {
 }
 
 type PaymentEventPayload struct {
-	OrderID            string    `json:"orderId"`
-	CustomerID         string    `json:"customerId"`
-	Price              float64   `json:"price"`
-	CreatedAt          time.Time `json:"createdAt"`
-	PaymentOrderStatus string    `json:"paymentOrderStatus"`
+	OrderID            string                    `json:"orderId"`
+	CustomerID         string                    `json:"customerId"`
+	Price              float64                   `json:"price"`
+	CreatedAt          time.Time                 `json:"createdAt"`
+	PaymentOrderStatus domain.PaymentOrderStatus `json:"paymentOrderStatus"`
 }
 
 type PaymentOutboxRepository interface {

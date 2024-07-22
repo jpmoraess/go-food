@@ -3,21 +3,37 @@ package domain
 import "github.com/google/uuid"
 
 type OrderItem struct {
-	ID       int32
-	OrderID  uuid.UUID
-	Product  *Product
-	Quantity int32
-	Price    float64
-	SubTotal float64
+	id        int
+	orderID   uuid.UUID
+	productID uuid.UUID
+	quantity  int
+	price     float64
+	subTotal  float64
 }
 
-func NewOrderItem(orderID uuid.UUID, ID int32) *OrderItem {
+func newOrderItem(ID int, orderID uuid.UUID, productID uuid.UUID, quantity int, price, subTotal float64) *OrderItem {
 	return &OrderItem{
-		ID:      ID,
-		OrderID: orderID,
+		id:        ID,
+		orderID:   orderID,
+		productID: productID,
+		quantity:  quantity,
+		price:     price,
+		subTotal:  subTotal,
 	}
 }
 
-func (o *OrderItem) IsPriceValid() bool {
-	return o.Price > 0 && o.Price == o.Product.Price && (o.Price*float64(o.Quantity)) == o.SubTotal
+func (o *OrderItem) SetProductID(productID uuid.UUID) {
+	o.productID = productID
+}
+
+func (o *OrderItem) SetQuantity(quantity int) {
+	o.quantity = quantity
+}
+
+func (o *OrderItem) SetPrice(price float64) {
+	o.price = price
+}
+
+func (o *OrderItem) SetSubTotal(subTotal float64) {
+	o.subTotal = subTotal
 }

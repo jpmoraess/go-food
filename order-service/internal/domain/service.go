@@ -6,7 +6,7 @@ import (
 )
 
 type OrderDomainService interface {
-	ValidateAndInitiateOrder(order *Order) (*OrderCreatedEvent, error)
+	InitiateOrder(order *Order) (*OrderCreatedEvent, error)
 	PayOrder(order *Order) (*OrderPaidEvent, error)
 	CancelOrder(order *Order, failureMessages []string) (*OrderCancelledEvent, error)
 }
@@ -14,29 +14,29 @@ type OrderDomainService interface {
 type OrderDomainServiceImpl struct {
 }
 
-func (s *OrderDomainServiceImpl) ValidateAndInitiateOrder(order *Order) (*OrderCreatedEvent, error) {
-	err := order.Validate()
+func (s *OrderDomainServiceImpl) InitiateOrder(order *Order) (*OrderCreatedEvent, error) {
+	entity, err := newOrder(order.CustomerID(), order.RestaurantID(), order.Price(), order.Items())
 	if err != nil {
-		log.Printf("order validate failed: %v", err)
+		log.Printf("create order failed: %v", err)
 		return nil, err
 	}
-	return NewOrderCreatedEvent(order, time.Now()), nil
+	return newOrderCreatedEvent(entity, time.Now()), nil
 }
 
 func (s *OrderDomainServiceImpl) PayOrder(order *Order) (*OrderPaidEvent, error) {
-	err := order.Pay()
+	err := order.pay()
 	if err != nil {
 		log.Printf("order paid failed: %v", err)
 		return nil, err
 	}
-	return NewOrderPaidEvent(order, time.Now()), nil
+	return newOrderPaidEvent(order, time.Now()), nil
 }
 
 func (s *OrderDomainServiceImpl) CancelOrder(order *Order, failureMessages []string) (*OrderCancelledEvent, error) {
-	err := order.Cancel(failureMessages)
+	err := order.cancel(failureMessages)
 	if err != nil {
 		log.Printf("order cancel failed: %v", err)
 		return nil, err
 	}
-	return NewOrderCancelledEvent(order, time.Now()), nil
+	return newOrderCancelledEvent(order, time.Now()), nil
 }

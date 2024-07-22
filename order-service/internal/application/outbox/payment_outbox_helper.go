@@ -26,13 +26,12 @@ func (h *PaymentOutboxHelper) GetPaymentOutboxMessageBySagaIdAndSagaStatus(ctx c
 }
 
 func (h *PaymentOutboxHelper) SavePaymentOutbox(ctx context.Context, payload *PaymentEventPayload, orderStatus domain.OrderStatus, sagaStatus saga.SagaStatus, outboxStatus OutboxStatus, sagaId uuid.UUID) error {
-	id, _ := uuid.NewRandom()
 	payloadStr, err := convertPayload(payload)
 	if err != nil {
 		return err
 	}
 	paymentOutbox := &PaymentOutbox{
-		ID:           id,
+		ID:           uuid.New(),
 		SagaID:       sagaId,
 		CreatedAt:    payload.CreatedAt,
 		Type:         "OrderSaga",
@@ -42,14 +41,14 @@ func (h *PaymentOutboxHelper) SavePaymentOutbox(ctx context.Context, payload *Pa
 		OutboxStatus: outboxStatus,
 	}
 
-	if err = h.save(ctx, paymentOutbox); err != nil {
+	if err = h.Save(ctx, paymentOutbox); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (h *PaymentOutboxHelper) save(ctx context.Context, paymentOutbox *PaymentOutbox) error {
+func (h *PaymentOutboxHelper) Save(ctx context.Context, paymentOutbox *PaymentOutbox) error {
 	return h.paymentOutboxRepo.Save(ctx, paymentOutbox)
 }
 

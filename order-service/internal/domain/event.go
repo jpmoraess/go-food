@@ -2,57 +2,57 @@ package domain
 
 import "time"
 
-type OrderEvent struct {
-	Order     *Order
-	CreatedAt time.Time
+type orderEvent struct {
+	order     *Order
+	createdAt time.Time
 }
 
-func (e *OrderEvent) GetOrder() *Order {
-	return e.Order
+func (e *orderEvent) Order() *Order {
+	return e.order
 }
 
-func (e *OrderEvent) GetCreatedAt() time.Time {
-	return e.CreatedAt
+func (e *orderEvent) CreatedAt() time.Time {
+	return e.createdAt
 }
 
 // OrderCreatedEvent -
 type OrderCreatedEvent struct {
-	OrderEvent
+	orderEvent
 }
 
-func NewOrderCreatedEvent(order *Order, createdAt time.Time) *OrderCreatedEvent {
+func newOrderCreatedEvent(order *Order, createdAt time.Time) *OrderCreatedEvent {
 	return &OrderCreatedEvent{
-		OrderEvent{
-			Order:     order,
-			CreatedAt: createdAt,
+		orderEvent{
+			order:     order,
+			createdAt: createdAt,
 		},
 	}
 }
 
 // OrderPaidEvent -
 type OrderPaidEvent struct {
-	OrderEvent
+	orderEvent
 }
 
-func NewOrderPaidEvent(order *Order, createdAt time.Time) *OrderPaidEvent {
+func newOrderPaidEvent(order *Order, createdAt time.Time) *OrderPaidEvent {
 	return &OrderPaidEvent{
-		OrderEvent{
-			Order:     order,
-			CreatedAt: createdAt,
+		orderEvent{
+			order:     order,
+			createdAt: createdAt,
 		},
 	}
 }
 
 // OrderCancelledEvent -
 type OrderCancelledEvent struct {
-	OrderEvent
+	orderEvent
 }
 
-func NewOrderCancelledEvent(order *Order, createdAt time.Time) *OrderCancelledEvent {
+func newOrderCancelledEvent(order *Order, createdAt time.Time) *OrderCancelledEvent {
 	return &OrderCancelledEvent{
-		OrderEvent{
-			Order:     order,
-			CreatedAt: createdAt,
+		orderEvent{
+			order:     order,
+			createdAt: createdAt,
 		},
 	}
 }

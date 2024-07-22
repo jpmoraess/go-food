@@ -1,15 +1,29 @@
 package domain
 
+import "github.com/google/uuid"
+
 type Product struct {
-	ID    string
-	Name  string
-	Price float64
+	id    uuid.UUID
+	name  string
+	price float64
 }
 
-func NewProduct(ID string, name string, price float64) *Product {
+func newProduct(ID uuid.UUID, name string, price float64) *Product {
 	return &Product{
-		ID:    ID,
-		Name:  name,
-		Price: price,
+		id:    ID,
+		name:  name,
+		price: price,
 	}
+}
+
+func (p *Product) ID() uuid.UUID {
+	return p.id
+}
+
+func (p *Product) Name() string {
+	return p.name
+}
+
+func (p *Product) Price() float64 {
+	return p.price
 }

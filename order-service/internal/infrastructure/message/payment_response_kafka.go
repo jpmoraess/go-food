@@ -15,7 +15,7 @@ type PaymentResponseKafka struct {
 }
 
 func NewPaymentResponseKafka(listener gateway.PaymentMessageListener) *PaymentResponseKafka {
-	brokers := []string{"localhost:9092"}
+	brokers := []string{"localhost:19092", "localhost:29092", "localhost:39092"}
 	groupID := "order-service"
 
 	config := sarama.NewConfig()

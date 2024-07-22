@@ -39,7 +39,15 @@ func (o *OrderRepositoryPostgres) Save(ctx context.Context, order *domain.Order)
 		return nil, fmt.Errorf("error starting transaction: %w", err)
 	}
 
-	query := `INSERT INTO orders (id, customer_id, restaurant_id, tracking_id, price, order_status, failure_messages) VALUES ($1, $2, $3, $4, $5, $6, $7)`
+	schema := `"order"` // Colocando entre aspas duplas
+	table := "orders"
+
+	query := fmt.Sprintf(`
+		INSERT INTO %s.%s (id, customer_id, restaurant_id, tracking_id, price, order_status, failure_messages)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+	`, schema, table)
+
+	//query := `INSERT INTO order.orders (id, customer_id, restaurant_id, tracking_id, price, order_status, failure_messages) VALUES ($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err = tx.Exec(ctx, query, order.ID(), order.CustomerID(), order.RestaurantID(), order.TrackingID(), order.Price(), order.Status(), strings.Join(order.FailureMessages(), ","))
 	if err != nil {

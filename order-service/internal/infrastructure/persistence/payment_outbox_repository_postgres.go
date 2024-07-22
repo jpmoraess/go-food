@@ -46,10 +46,13 @@ func (p *PaymentOutboxRepositoryPostgres) Save(ctx context.Context, paymentOutbo
 		return err
 	}
 
-	query := `
-		INSERT INTO payment_outbox (id, saga_id, created_at, processed_at, type, payload, saga_status, order_status, outbox_status, version)
+	schema := `"order"` // Colocando entre aspas duplas
+	table := "payment_outbox"
+
+	query := fmt.Sprintf(`
+		INSERT INTO %s.%s (id, saga_id, created_at, processed_at, type, payload, saga_status, order_status, outbox_status, version)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-	`
+	`, schema, table)
 
 	_, err = tx.Exec(ctx, query, paymentOutbox.ID, paymentOutbox.SagaID, paymentOutbox.CreatedAt, paymentOutbox.ProcessedAt,
 		paymentOutbox.Type, paymentOutbox.Payload, paymentOutbox.SagaStatus, paymentOutbox.OrderStatus, paymentOutbox.OutboxStatus, 1)

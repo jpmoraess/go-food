@@ -19,7 +19,6 @@ func NewCreateOrderUseCase(orderSagaHelper *helper.SagaHelper, createOrderHelper
 	return &CreateOrderUseCase{orderSagaHelper: orderSagaHelper, createOrderHelper: createOrderHelper, paymentOutboxHelper: paymentOutboxHelper}
 }
 
-// TODO: persist and payment outbox (db transaction)
 func (uc *CreateOrderUseCase) Execute(ctx context.Context, input *dto.CreateOrderInputDTO) (*dto.CreateOrderOutputDTO, error) {
 	orderCreatedEvent, err := uc.createOrderHelper.PersistOrder(ctx, input)
 	if err != nil {

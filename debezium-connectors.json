@@ -1,0 +1,18 @@
+{
+  "name": "order-payment-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "host.docker.internal",
+    "database.port": "5432",
+    "database.user": "backend",
+    "database.password": "backend",
+    "database.dbname" : "postgres",
+    "database.server.name": "PostgreSQL-15",
+    "table.include.list": "order.payment_outbox",
+    "topic.prefix": "debezium",
+    "tombstones.on.delete" : "false",
+    "slot.name" : "order_payment_outbox_slot",
+    "plugin.name": "pgoutput"
+  }
+}

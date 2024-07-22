@@ -49,7 +49,7 @@ func main() {
 	v1.Post("/order", orderHandler.CreateOrder)
 
 	log.Println("servidor HTTP rodando na porta 8080")
-	if err = app.Listen(":8080"); err != nil {
+	if err = app.Listen(":8090"); err != nil {
 		log.Fatalf("erro ao iniciar o servidor HTTP: %v\n", err)
 	}
 }

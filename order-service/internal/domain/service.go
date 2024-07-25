@@ -14,6 +14,10 @@ type OrderDomainService interface {
 type OrderDomainServiceImpl struct {
 }
 
+func NewOrderDomainServiceImpl() *OrderDomainServiceImpl {
+	return &OrderDomainServiceImpl{}
+}
+
 func (s *OrderDomainServiceImpl) InitiateOrder(order *Order) (*OrderCreatedEvent, error) {
 	entity, err := newOrder(order.CustomerID(), order.RestaurantID(), order.Price(), order.Items())
 	if err != nil {

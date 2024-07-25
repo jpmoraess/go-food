@@ -109,8 +109,6 @@ services:
       - kafka-broker-1
       - kafka-broker-2
       - kafka-broker-3
-    volumes:
-      - "C://debezium-connector-schema-registry-7.6.0:/kafka/connect/debezium-connector-schemaregistry-7.6.0"
     networks:
       - ${GLOBAL_NETWORK:-kafka}
   kafka-ui:

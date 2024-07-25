@@ -10,18 +10,17 @@ import (
 )
 
 type CreateOrderHelper struct {
+	orderMapper        *mapper.OrderMapper
 	orderRepo          repository.OrderRepository
 	orderDomainService domain.OrderDomainService
 }
 
-func NewCreateOrderHelper(orderRepo repository.OrderRepository, orderDomainService domain.OrderDomainService) *CreateOrderHelper {
-	return &CreateOrderHelper{orderRepo: orderRepo, orderDomainService: orderDomainService}
+func NewCreateOrderHelper(orderMapper *mapper.OrderMapper, orderRepo repository.OrderRepository, orderDomainService domain.OrderDomainService) *CreateOrderHelper {
+	return &CreateOrderHelper{orderMapper: orderMapper, orderRepo: orderRepo, orderDomainService: orderDomainService}
 }
 
 func (h *CreateOrderHelper) PersistOrder(ctx context.Context, input *dto.CreateOrderInputDTO) (*domain.OrderCreatedEvent, error) {
-	orderMapper := mapper.OrderMapper{}
-	order := orderMapper.CreateOrderInputToOrder(input)
-
+	order := h.orderMapper.CreateOrderInputToOrder(input)
 	orderCreatedEvent, err := h.orderDomainService.InitiateOrder(order)
 	if err != nil {
 		return nil, err

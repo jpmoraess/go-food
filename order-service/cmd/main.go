@@ -32,9 +32,9 @@ func main() {
 	orderMapper := &mapper.OrderMapper{}
 
 	// services and helpers
-	domainService := &domain.OrderDomainServiceImpl{}
+	domainService := domain.NewOrderDomainServiceImpl()
 	sagaHelper := &helper.SagaHelper{}
-	createOrderHelper := helper.NewCreateOrderHelper(orderRepo, domainService)
+	createOrderHelper := helper.NewCreateOrderHelper(orderMapper, orderRepo, domainService)
 	paymentOutboxHelper := helper.NewPaymentOutboxHelper(paymentOutboxRepo)
 
 	// saga and messages

@@ -11,13 +11,6 @@ import (
 	"github.com/jpmoraess/go-food/order-service/internal/domain"
 )
 
-type OrderEntity struct {
-	ID           uuid.UUID
-	CustomerID   uuid.UUID
-	RestaurantID uuid.UUID
-	Price        float64
-}
-
 type OrderRepositoryPostgres struct {
 	dbpool *pgxpool.Pool
 }

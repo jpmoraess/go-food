@@ -3,13 +3,14 @@ package persistence
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jpmoraess/go-food/order-service/internal/application/outbox"
-	"github.com/jpmoraess/go-food/order-service/internal/application/saga"
-	"github.com/jpmoraess/go-food/order-service/internal/domain"
 	"log"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jpmoraess/go-food/order-service/internal/application/dto"
+	"github.com/jpmoraess/go-food/order-service/internal/application/enum"
+	"github.com/jpmoraess/go-food/order-service/internal/domain"
 )
 
 type PaymentOutboxEntity struct {
@@ -19,9 +20,9 @@ type PaymentOutboxEntity struct {
 	ProcessedAt  time.Time
 	Type         string
 	Payload      string
-	SagaStatus   saga.SagaStatus
+	SagaStatus   enum.SagaStatus
 	OrderStatus  domain.OrderStatus
-	OutboxStatus outbox.OutboxStatus
+	OutboxStatus enum.OutboxStatus
 	Version      int
 }
 
@@ -33,7 +34,7 @@ func NewPaymentOutboxRepositoryPostgres(dbpool *pgxpool.Pool) *PaymentOutboxRepo
 	return &PaymentOutboxRepositoryPostgres{dbpool: dbpool}
 }
 
-func (p *PaymentOutboxRepositoryPostgres) Save(ctx context.Context, paymentOutbox *outbox.PaymentOutbox) error {
+func (p *PaymentOutboxRepositoryPostgres) Save(ctx context.Context, paymentOutbox *dto.PaymentOutbox) error {
 	conn, err := p.dbpool.Acquire(ctx)
 	if err != nil {
 		return err
@@ -67,14 +68,14 @@ func (p *PaymentOutboxRepositoryPostgres) Save(ctx context.Context, paymentOutbo
 	return nil
 }
 
-func (p *PaymentOutboxRepositoryPostgres) FindByTypeAndSagaIdAndSagaStatus(ctx context.Context, outboxType string, sagaId uuid.UUID, SagaStatus ...saga.SagaStatus) *outbox.PaymentOutbox {
+func (p *PaymentOutboxRepositoryPostgres) FindByTypeAndSagaIdAndSagaStatus(ctx context.Context, outboxType string, sagaId uuid.UUID, SagaStatus ...enum.SagaStatus) *dto.PaymentOutbox {
 	return nil
 }
 
-func (p *PaymentOutboxRepositoryPostgres) DeleteByTypeAndOutboxStatusAndSagaStatus(ctx context.Context, outboxType string, outboxStatus outbox.OutboxStatus, SagaStatus ...saga.SagaStatus) error {
+func (p *PaymentOutboxRepositoryPostgres) DeleteByTypeAndOutboxStatusAndSagaStatus(ctx context.Context, outboxType string, outboxStatus enum.OutboxStatus, SagaStatus ...enum.SagaStatus) error {
 	return nil
 }
 
-func (p *PaymentOutboxRepositoryPostgres) FindByTypeAndOutboxStatusAndSagaStatus(ctx context.Context, outboxType string, outboxStatus outbox.OutboxStatus, SagaStatus ...saga.SagaStatus) []*outbox.PaymentOutbox {
+func (p *PaymentOutboxRepositoryPostgres) FindByTypeAndOutboxStatusAndSagaStatus(ctx context.Context, outboxType string, outboxStatus enum.OutboxStatus, SagaStatus ...enum.SagaStatus) []*dto.PaymentOutbox {
 	return nil
 }

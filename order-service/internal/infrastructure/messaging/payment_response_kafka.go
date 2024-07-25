@@ -1,11 +1,12 @@
-package message
+package messaging
 
 import (
 	"context"
-	"github.com/IBM/sarama"
-	"github.com/jpmoraess/go-food/order-service/internal/application/gateway"
 	"log"
 	"time"
+
+	"github.com/IBM/sarama"
+	"github.com/jpmoraess/go-food/order-service/internal/application/gateway"
 )
 
 type PaymentResponseKafka struct {

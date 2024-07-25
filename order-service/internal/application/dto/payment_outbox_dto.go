@@ -1,11 +1,11 @@
-package outbox
+package dto
 
 import (
-	"context"
-	"github.com/google/uuid"
-	"github.com/jpmoraess/go-food/order-service/internal/application/saga"
-	"github.com/jpmoraess/go-food/order-service/internal/domain"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/jpmoraess/go-food/order-service/internal/application/enum"
+	"github.com/jpmoraess/go-food/order-service/internal/domain"
 )
 
 type PaymentOutbox struct {
@@ -16,8 +16,8 @@ type PaymentOutbox struct {
 	Type         string             `json:"type"`
 	Payload      string             `json:"payload"`
 	OrderStatus  domain.OrderStatus `json:"orderStatus"`
-	SagaStatus   saga.SagaStatus    `json:"sagaStatus"`
-	OutboxStatus OutboxStatus       `json:"outboxStatus"`
+	SagaStatus   enum.SagaStatus    `json:"sagaStatus"`
+	OutboxStatus enum.OutboxStatus  `json:"outboxStatus"`
 	Version      int                `json:"version"`
 }
 
@@ -27,11 +27,4 @@ type PaymentEventPayload struct {
 	Price              float64                   `json:"price"`
 	CreatedAt          time.Time                 `json:"createdAt"`
 	PaymentOrderStatus domain.PaymentOrderStatus `json:"paymentOrderStatus"`
-}
-
-type PaymentOutboxRepository interface {
-	Save(ctx context.Context, paymentOutbox *PaymentOutbox) error
-	FindByTypeAndSagaIdAndSagaStatus(ctx context.Context, outboxType string, sagaId uuid.UUID, SagaStatus ...saga.SagaStatus) *PaymentOutbox
-	DeleteByTypeAndOutboxStatusAndSagaStatus(ctx context.Context, outboxType string, outboxStatus OutboxStatus, SagaStatus ...saga.SagaStatus) error
-	FindByTypeAndOutboxStatusAndSagaStatus(ctx context.Context, outboxType string, outboxStatus OutboxStatus, SagaStatus ...saga.SagaStatus) []*PaymentOutbox
 }

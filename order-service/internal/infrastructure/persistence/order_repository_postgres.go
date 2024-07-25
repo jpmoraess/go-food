@@ -3,11 +3,12 @@ package persistence
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jpmoraess/go-food/order-service/internal/domain"
-	"log"
-	"strings"
 )
 
 type OrderEntity struct {

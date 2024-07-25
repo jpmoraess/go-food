@@ -1,49 +1,23 @@
 package helper
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"github.com/google/uuid"
-	"github.com/jpmoraess/go-food/order-service/internal/application/saga"
+	"github.com/jpmoraess/go-food/order-service/internal/application/enum"
 	"github.com/jpmoraess/go-food/order-service/internal/domain"
 )
 
-type SagaHelper struct {
-	orderRepo domain.OrderRepository
-}
+type SagaHelper struct{}
 
-func NewSagaHelper(orderRepo domain.OrderRepository) *SagaHelper {
-	return &SagaHelper{orderRepo: orderRepo}
-}
-
-func (s *SagaHelper) FindOrder(ctx context.Context, orderID uuid.UUID) (*domain.Order, error) {
-	order, err := s.orderRepo.FindByID(ctx, orderID)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("order with id: %s could not be found\n", orderID))
-	}
-	return order, nil
-}
-
-func (s *SagaHelper) SaveOrder(ctx context.Context, order *domain.Order) (*domain.Order, error) {
-	saved, err := s.orderRepo.Save(ctx, order)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("order with id: %s could not be saved\n", order.ID))
-	}
-	return saved, nil
-}
-
-func (s *SagaHelper) OrderStatusToSagaStatus(orderStatus domain.OrderStatus) saga.SagaStatus {
+func (s *SagaHelper) OrderStatusToSagaStatus(orderStatus domain.OrderStatus) enum.SagaStatus {
 	switch orderStatus {
 	case domain.PAID:
-		return saga.PROCESSING
+		return enum.SAGA_PROCESSING
 	case domain.APPROVED:
-		return saga.SUCCEEDED
+		return enum.SAGA_SUCCEEDED
 	case domain.CANCELLING:
-		return saga.COMPENSATING
+		return enum.SAGA_COMPENSATING
 	case domain.CANCELLED:
-		return saga.COMPENSATED
+		return enum.SAGA_COMPENSATED
 	default:
-		return saga.STARTED
+		return enum.SAGA_STARTED
 	}
 }

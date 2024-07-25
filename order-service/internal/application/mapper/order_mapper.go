@@ -2,7 +2,6 @@ package mapper
 
 import (
 	"github.com/jpmoraess/go-food/order-service/internal/application/dto"
-	"github.com/jpmoraess/go-food/order-service/internal/application/outbox"
 	"github.com/jpmoraess/go-food/order-service/internal/domain"
 )
 
@@ -30,8 +29,8 @@ func (o *OrderMapper) orderItemsInputToOrderItems(items []dto.OrderItemInputDTO)
 	return orderItems
 }
 
-func (o *OrderMapper) OrderCreatedEventToPaymentEventPayload(event *domain.OrderCreatedEvent) *outbox.PaymentEventPayload {
-	return &outbox.PaymentEventPayload{
+func (o *OrderMapper) OrderCreatedEventToPaymentEventPayload(event *domain.OrderCreatedEvent) *dto.PaymentEventPayload {
+	return &dto.PaymentEventPayload{
 		OrderID:            event.Order().ID().String(),
 		CustomerID:         event.Order().CustomerID().String(),
 		Price:              event.Order().Price(),
